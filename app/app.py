@@ -45,7 +45,7 @@ def inference(gender, image_np ):
 
 demo = gr.Interface(
     fn=inference,
-    inputs=[ gr.Radio(["boy","girl"]), gr.ImageEditor()],
+    inputs=[ gr.Radio(["boy","girl"]), gr.Image()],
     outputs=["text"],
 )
 #model = keras.layers.TFSMLayer(r"pruned_bone_age.pb", call_endpoint='serving_default')
