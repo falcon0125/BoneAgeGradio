@@ -37,7 +37,7 @@ def inference(gender, image_np ):
     argmax, argmin = s.argmax(), s.argmin()
     del s[argmax]
     del s[argmin]
-    output = f"predict Bone Age: {s.mean():.1f} +/- {s.std():.1f} y/o\nmale:{gender}"
+    output = f"predict Bone Age: {s.mean():.1f} +/- {s.std():.1f} y/o\ngender:{gender}"
     df = s.to_frame()
     print(output)
     #print(s)
@@ -45,7 +45,7 @@ def inference(gender, image_np ):
 
 demo = gr.Interface(
     fn=inference,
-    inputs=[ gr.Radio(["boy","girl"]), gr.Image()],
+    inputs=[ gr.Radio(["boy","girl"]), gr.ImageEditor()],
     outputs=["text"],
 )
 #model = keras.layers.TFSMLayer(r"pruned_bone_age.pb", call_endpoint='serving_default')
