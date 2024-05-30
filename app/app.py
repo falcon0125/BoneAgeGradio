@@ -17,8 +17,10 @@ transforms = A.Compose([
     HorizontalFlip(p=0.5),
     Resize(p=1.0, height=256, width=256, interpolation=0),]
 )
+gr.set_static_paths(paths=["/app/atlas/"])
 
 js = json.load(open("atlas.json",'r'))
+"""[{"path":"atlas/girl-8m.jpg","name":"girl-8m","gender":"girl","ageo":"8m","age":0.6666666667},"""
 delta = 2.5
 img_height, img_width = 256,256
 batch_size = 32
@@ -47,7 +49,7 @@ def inference(gender, image_np ):
     #print(s)
     pathlist = [j['path'] for j in js if 
                 j["age"]>(age_range-delta) and j["age"]<(age_range+delta) and j['gender']==gender]
-    return output, gr.Gallery(pathlist, label="Atlas")
+    return output, gr.Gallery(pathlist, label="Atlas", show_download_button=False, show_share_button=False)
 
 demo = gr.Interface(
     fn=inference,
@@ -60,4 +62,4 @@ demo = gr.Interface(
 #model = keras.layers.TFSMLayer(r"pruned_bone_age.pb", call_endpoint='serving_default')
 
 if __name__ == "__main__":
-    demo.launch(allowed_paths=['image'])
+    demo.launch(allowed_paths=["/app/atlas"])
