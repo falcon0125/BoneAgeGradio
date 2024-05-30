@@ -1,6 +1,7 @@
 ﻿import gradio as gr
 import numpy as np
 import pandas as pd
+import json
 import tensorflow as tf
 import albumentations as A
 from albumentations import ( 
@@ -17,6 +18,8 @@ transforms = A.Compose([
     Resize(p=1.0, height=256, width=256, interpolation=0),]
 )
 
+js = json.load(open("atlas.json",'r'))
+delta = 2.5
 img_height, img_width = 256,256
 batch_size = 32
 model = tf.keras.models.load_model(r"pruned_bone_age.h5", compile=False)  
@@ -39,16 +42,22 @@ def inference(gender, image_np ):
     del s[argmin]
     output = f"predict Bone Age: {s.mean():.1f} +/- {s.std():.1f} y/o\ngender:{gender}"
     df = s.to_frame()
+    age_range = s.mean()
     print(output)
     #print(s)
-    return output
+    pathlist = [j['path'] for j in js if 
+                j["age"]>(age_range-delta) and j["age"]<(age_range+delta) and j['gender']==gender]
+    return output, gr.Gallery(pathlist, label="Atlas")
 
 demo = gr.Interface(
     fn=inference,
-    inputs=[ gr.Radio(["boy","girl"]), gr.Image()],
-    outputs=["text"],
+    inputs=[ gr.Radio(["boy","girl"], label='Gender', value='boy'), gr.Image(label="Image")],
+    outputs=[gr.Text(label="result"),gr.Gallery(label="Atlas")],
+    title="BonaAge",
+    description=r"Bone age AI training with 8K+ bone age data base on [Tanner-Whitehouse mathod](http://vl.academicdirect.ro/medical_informatics/bone_age/v1.0/)",
+    article=r"Due to the fact that the population mainly consists of 4- to 8-year-olds, accuracy outside this range may be limited. <br/>Disclaimer: This information is intended for general purposes only and should not be used for medical purposes. Always consult a qualified healthcare professional for medical advice, diagnosis, or treatment"
 )
 #model = keras.layers.TFSMLayer(r"pruned_bone_age.pb", call_endpoint='serving_default')
 
 if __name__ == "__main__":
-    demo.launch()
+    demo.launch(allowed_paths=['image'])
