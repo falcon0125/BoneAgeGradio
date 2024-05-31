@@ -6,7 +6,7 @@ RUN apt update -y &&\
     pip install --upgrade pip &&\
     pip install -r requirements.txt
 RUN pip cache remove "*"
-EXPOSE 7860
+EXPOSE 80
 COPY app/* ./app/
 WORKDIR /app
 ENV GRADIO_SERVER_NAME="0.0.0.0"
