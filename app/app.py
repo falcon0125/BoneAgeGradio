@@ -21,9 +21,9 @@ gr.set_static_paths(paths=["/app/atlas/"])
 
 js = json.load(open("atlas.json",'r'))
 """[{"path":"atlas/girl-8m.jpg","name":"girl-8m","gender":"girl","ageo":"8m","age":0.6666666667},"""
-delta = 2.5
+delta = 3
 img_height, img_width = 256,256
-batch_size = 32
+batch_size = 16
 model = tf.keras.models.load_model(r"pruned_bone_age.h5", compile=False)  
 
 def inference(gender, image_np ):
@@ -55,11 +55,11 @@ demo = gr.Interface(
     fn=inference,
     inputs=[ gr.Radio(["boy","girl"], label='Gender', value='boy'), gr.Image(label="Image")],
     outputs=[gr.Text(label="result"),gr.Gallery(label="Atlas")],
-    title="BonaAge",
+    title="Bone Age",
     description=r"Bone age AI training with 8K+ bone age data base on [Tanner-Whitehouse mathod](http://vl.academicdirect.ro/medical_informatics/bone_age/v1.0/)",
-    article=r"Due to the fact that the population mainly consists of 4- to 8-year-olds, accuracy outside this range may be limited. <br/>Disclaimer: This information is intended for general purposes only and should not be used for medical purposes. Always consult a qualified healthcare professional for medical advice, diagnosis, or treatment"
+    article=r"Due to the fact that the population mainly consists of 6 to 10 year-olds, accuracy outside this range may be limited. <br/>Disclaimer: This information is intended for general purposes only and should not be used for medical purposes. Always consult a qualified healthcare professional for medical advice, diagnosis, or treatment"
 )
 #model = keras.layers.TFSMLayer(r"pruned_bone_age.pb", call_endpoint='serving_default')
 
 if __name__ == "__main__":
-    demo.launch(allowed_paths=["/app/atlas"])
+    demo.launch(allowed_paths=["/app/atlas","/image"], favicon_path="hello.png")
