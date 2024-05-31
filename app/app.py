@@ -62,4 +62,4 @@ demo = gr.Interface(
 #model = keras.layers.TFSMLayer(r"pruned_bone_age.pb", call_endpoint='serving_default')
 
 if __name__ == "__main__":
-    demo.launch(allowed_paths=["/app/atlas","/image"], favicon_path="hello.png")
+    demo.launch(allowed_paths=["/app/atlas","/image"], favicon_path="hello.png",server_port=80)
