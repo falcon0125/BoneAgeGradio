@@ -1,7 +1,9 @@
 ﻿import gradio as gr
 import numpy as np
 import json
-import tflite_runtime.interpreter as tflite
+import tensorflow.lite as tflite
+
+gr.set_static_paths(paths=["/app/atlas/"])  
 
 gr.set_static_paths(paths=["/app/atlas/"])
 
@@ -10,7 +12,7 @@ js = json.load(open("atlas.json",'r'))
 delta = 3
 img_height, img_width = 256,256
 
-interpreter = tflite.Interpreter(model_path="boneage2024.tflite")
+interpreter = tflite.Interpreter(model_path="bone-age-densenet.tflite")
 
 def inference(gender, image):
     print(type(image))
@@ -35,7 +37,7 @@ def inference(gender, image):
     age_range = output_data [0][0]   
     print(age_range)
     
-    output = f"predict Bone Age: {age_range:.1f} y/o\ngender:{gender}"
+    output = f"predicted Bone Age about {age_range:.1f} y/o\ngender:{gender}"
     #print(s)
     pathlist = [j['path'] for j in js if 
                 j["age"]>(age_range-delta) and j["age"]<(age_range+delta) and j['gender']==gender]
@@ -46,7 +48,7 @@ demo = gr.Interface(
     inputs=[ gr.Radio(["boy","girl"], label='Gender', value='boy'), gr.Image(label="Image", type="pil", image_mode="L")],
     outputs=[gr.Text(label="result"),gr.Gallery(label="Atlas")],
     title="Bone Age",
-    description=r"Bone age AI training with 8K+ bone age data base on [Tanner-Whitehouse mathod](http://vl.academicdirect.ro/medical_informatics/bone_age/v1.0/)",
+    description=r"Bone age AI training with 8K+ bone age data base on [Tanner-Whitehouse mathod](http://vl.academicdirect.ro/medical_informatics/bone_age/v1.0/), inference using tflite",
     article=r"Due to the fact that the population mainly consists of 6 to 10 year-olds, accuracy outside this range may be limited. <br/>Disclaimer: This information is intended for general purposes only and should not be used for medical purposes. Always consult a qualified healthcare professional for medical advice, diagnosis, or treatment",
     allow_flagging = 'manual',
     flagging_options=['agree','disagree'] 
