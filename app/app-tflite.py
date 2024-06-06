@@ -2,10 +2,9 @@
 import numpy as np
 import json
 import tensorflow.lite as tflite
+import time
 
 gr.set_static_paths(paths=["/app/atlas/"])  
-
-gr.set_static_paths(paths=["/app/atlas/"])
 
 js = json.load(open("atlas.json",'r'))
 """[{"path":"atlas/girl-8m.jpg","name":"girl-8m","gender":"girl","ageo":"8m","age":0.6666666667},"""
@@ -14,12 +13,13 @@ img_height, img_width = 256,256
 
 interpreter = tflite.Interpreter(model_path="bone-age-densenet.tflite")
 
-def inference(gender, image):
+def inference(gender, image, request: gr.Request):
     print(type(image))
+    start_time = time.process_time()
     image = image.resize( (img_width,img_height))
     sex = 1 if gender == 'boy' else 0    
     img = np.array(image)
-    np_img = img/256    
+    np_img = img/255   
     interpreter.allocate_tensors()
 # Get input and output tensors.
     input_details = interpreter.get_input_details()
@@ -35,9 +35,13 @@ def inference(gender, image):
     interpreter.invoke()
     output_data = interpreter.get_tensor(output_details[0]['index'])
     age_range = output_data [0][0]   
-    print(age_range)
+    
     
     output = f"predicted Bone Age about {age_range:.1f} y/o\ngender:{gender}"
+
+    print(f"IP:{request.client.host}")
+    print(f"OUTPUT:{output}")
+    print(f"INFERENCE TIME:{time.process_time() - start_time}")
     #print(s)
     pathlist = [j['path'] for j in js if 
                 j["age"]>(age_range-delta) and j["age"]<(age_range+delta) and j['gender']==gender]
