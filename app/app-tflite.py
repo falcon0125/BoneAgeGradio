@@ -1,7 +1,7 @@
 ﻿import gradio as gr
 import numpy as np
 import json
-import tensorflow.lite as tflite
+from tensorflow import lite as tflite
 import time
 
 gr.set_static_paths(paths=["/app/atlas/"])  
